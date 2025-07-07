@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/DavidSheinkman/GoStudy/internal/handlers"
+	"github.com/DavidSheinkman/GoStudy/internal/middleware"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -29,6 +30,8 @@ func main() {
 		c.Set("db", db)
 		c.Next()
 	})
+
+	r.Use(middleware.AuthRequired())
 
 	r.GET("/api/urls", handlers.GetURLs)
 	r.POST("/api/urls", handlers.AddURL)
