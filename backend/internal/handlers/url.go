@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/DavidSheinkman/GoStudy/internal/crawler"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,20 +72,42 @@ func StartCrawl(c *gin.Context) {
 	db := c.MustGet("db").(*sql.DB)
 	id := c.Param("id")
 
-	// Update status to running
-	res, err := db.Exec("UPDATE urls SET status = 'running', last_run_at = ? WHERE id = ?", time.Now(), id)
+	// Get the URL from DB
+	var target string
+	err := db.QueryRow("SELECT url FROM urls WHERE id = ?", id).Scan(&target)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
-		return
-	}
-
-	rowsAffected, _ := res.RowsAffected()
-	if rowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "URL not found"})
 		return
 	}
 
-	// TODO: trigger actual crawling logic asynchronously here
+	// Set status to running
+	db.Exec("UPDATE urls SET status = 'running', last_run_at = ? WHERE id = ?", time.Now(), id)
+
+	go func() {
+		result, err := crawler.CrawlURL(target)
+		if err != nil {
+			log.Println("Crawl error:", err)
+			db.Exec("UPDATE urls SET status = 'error' WHERE id = ?", id)
+			return
+		}
+
+		// Save result
+		_, err = db.Exec(`
+			INSERT INTO crawl_results
+			(url_id, html_version, title, h1_count, h2_count, internal_links, external_links, broken_links, has_login_form, created_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, id, result.HTMLVersion, result.Title, result.H1Count, result.H2Count,
+			result.InternalLinks, result.ExternalLinks, result.BrokenLinks, result.HasLoginForm, time.Now())
+
+		if err != nil {
+			log.Println("DB insert error:", err)
+			db.Exec("UPDATE urls SET status = 'error' WHERE id = ?", id)
+			return
+		}
+
+		// Mark as done
+		db.Exec("UPDATE urls SET status = 'done' WHERE id = ?", id)
+	}()
 
 	c.JSON(http.StatusOK, gin.H{"message": "Crawl started"})
 }
