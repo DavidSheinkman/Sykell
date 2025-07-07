@@ -32,6 +32,9 @@ func main() {
 
 	r.GET("/api/urls", handlers.GetURLs)
 	r.POST("/api/urls", handlers.AddURL)
+	r.POST("/api/urls/:id/start", handlers.StartCrawl)
+	r.GET("/api/urls/:id/status", handlers.GetStatus)
+	r.DELETE("/api/urls/:id/delete", handlers.DeleteURL)
 
 	// Start server on port 8080
 	if err := r.Run(":8080"); err != nil {
