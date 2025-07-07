@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 
+	"github.com/DavidSheinkman/GoStudy/internal/handlers"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -25,13 +25,13 @@ func main() {
 
 	r := gin.Default()
 
-	// Example route to test API
-	r.GET("/api/urls", func(c *gin.Context) {
-		// Just return dummy data for now
-		c.JSON(http.StatusOK, gin.H{
-			"urls": []string{"https://example.com", "https://openai.com"},
-		})
+	r.Use(func(c *gin.Context) {
+		c.Set("db", db)
+		c.Next()
 	})
+
+	r.GET("/api/urls", handlers.GetURLs)
+	r.POST("/api/urls", handlers.AddURL)
 
 	// Start server on port 8080
 	if err := r.Run(":8080"); err != nil {
