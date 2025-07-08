@@ -59,3 +59,26 @@ th, td {
   display: flex;
   gap: 1rem;
 }
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.4rem;
+  }
+
+  .filterBar,
+  .searchBar,
+  .bulkActions,
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    margin-bottom: 0.3rem;
+  }
+}

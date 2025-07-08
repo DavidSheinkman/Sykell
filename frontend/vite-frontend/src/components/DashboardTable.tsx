@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { useDebounce } from 'use-debounce'
+
 import {
   useReactTable,
   getCoreRowModel,
@@ -110,11 +112,12 @@ export const DashboardTable = ({
   })
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [titleQuery, setTitleQuery] = useState('')
+  const [debouncedQuery] = useDebounce(titleQuery, 200)
 
   const filteredData = useMemo(() => {
     if (!data) return []  // guard if data is null or undefined
 
-    const query = titleQuery.toLowerCase()
+    const query = debouncedQuery.toLowerCase()
 
     return data.filter(row => {
       const matchesStatus = statusFilter === 'all' || row.status === statusFilter

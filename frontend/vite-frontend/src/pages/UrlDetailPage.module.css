@@ -19,3 +19,21 @@ p {
 .detailPage li {
   margin-bottom: 0.3rem;
 }
+
+@media (max-width: 768px) {
+  .detailPage {
+    padding: 1rem 0.5rem;
+  }
+
+  h1, h2 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+
+  .detailPage ul {
+    padding-left: 1rem;
+  }
+}
