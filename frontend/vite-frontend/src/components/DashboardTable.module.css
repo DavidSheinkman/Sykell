@@ -1,18 +1,22 @@
 .tableContainer {
-  overflow-x: auto;
+  width: 100%;
   margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
+  min-width: 600px; /* Minimum width before scrolling kicks in */
 }
 
 th, td {
   padding: 0.5rem;
   border-bottom: 1px solid #ccc;
   text-align: left;
+  word-break: break-word; /* Ensure content breaks properly */
 }
 
 .headerBtn {
@@ -20,10 +24,16 @@ th, td {
   border: none;
   font-weight: bold;
   cursor: pointer;
+  white-space: nowrap; /* Keep sort icons on same line */
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .actions button {
-  margin-right: 0.5rem;
   padding: 0.25rem 0.5rem;
 }
 
@@ -32,32 +42,27 @@ th, td {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.filterBar {
-  margin-bottom: 1rem;
-}
-
+.filterBar, 
 .searchBar {
   margin-bottom: 1rem;
 }
+
 .searchBar input {
   padding: 4px 8px;
   font-size: 14px;
   margin-left: 6px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .bulkActions {
   margin: 1rem 0;
   display: flex;
   gap: 1rem;
-  align-items: center;
-}
-
-.bulkActions {
-  margin: 1rem 0;
-  display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .statusDone {
@@ -92,26 +97,49 @@ th, td {
   }
 }
 
-
+/* Mobile styles */
 @media (max-width: 768px) {
-  .table {
-    font-size: 0.85rem;
+  .tableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
   }
-
-  th, td {
-    padding: 0.4rem;
-  }
-
+  
   .filterBar,
-  .searchBar,
-  .bulkActions,
-  .pagination {
+  .searchBar {
+    width: 100%;
+  }
+  
+  .searchBar input {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .actions {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  .actions button {
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  .bulkActions {
+    flex-direction: column;
     gap: 0.5rem;
   }
-
-  .actions button {
-    margin-bottom: 0.3rem;
+  
+  .bulkActions button {
+    width: 100%;
+  }
+  
+  .pagination {
+    justify-content: center;
+  }
+  
+  /* Stack date/time vertically */
+  td div {
+    display: block;
   }
 }

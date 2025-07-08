@@ -2,6 +2,7 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
+  overflow-x: hidden; 
 }
 
 h1, h2 {
@@ -15,9 +16,17 @@ p {
 .detailPage ul {
   margin-top: 0.5rem;
   padding-left: 1.2rem;
+  list-style-position: inside; 
+  word-break: break-word; 
+  overflow-wrap: break-word; 
 }
+
 .detailPage li {
   margin-bottom: 0.3rem;
+}
+
+.detailPage a {
+  word-break: break-all; 
 }
 
 @media (max-width: 768px) {

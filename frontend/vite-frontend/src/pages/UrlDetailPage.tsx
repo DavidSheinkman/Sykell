@@ -66,10 +66,12 @@ export default function UrlDetailPage() {
 
   return (
     <div className={styles.detailPage}>
-      <h1>URL Details (ID: {id})</h1>
-      <p><strong>Status:</strong> {data.status}</p>
-      <p><strong>Title:</strong> {results.title || 'N/A'}</p>
+      <h1>Title: {results.title}</h1>
+
+
       <p><strong>HTML Version:</strong> {results.html_version || 'N/A'}</p>
+      <p><strong>h1 count:</strong> {results.h1_count || '0'}</p>
+      <p><strong>h2 count:</strong> {results.h2_count || '0'}</p>
       <p><strong>Has Login Form:</strong> {results.has_login_form ? 'Yes' : 'No'}</p>
 
       <h2>Link Chart</h2>
