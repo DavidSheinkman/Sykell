@@ -3,11 +3,13 @@ import styles from './AddURLForm.module.css'
 
 const API_BASE = 'http://localhost:8080'
 
+// Reusable form component to add a new URL to be crawled
 export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Handle form submit: POST new URL to backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)

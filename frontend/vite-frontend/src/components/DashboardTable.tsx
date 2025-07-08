@@ -23,6 +23,7 @@ type URLData = {
   title?: string
 }
 
+// Table with sorting, pagination, search, filters, and bulk actions
 export const DashboardTable = ({
   data,
   onStart,
@@ -105,6 +106,7 @@ export const DashboardTable = ({
   const [selectedIds, setSelectedIds] = useState<number[]>([])
 
 
+  // Sorting, pagination, and filter states
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
     pageIndex: 0,

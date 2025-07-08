@@ -4,6 +4,7 @@ import { AddURLForm } from '../components/AddURLForm'
 import { DashboardTable } from '../components/DashboardTable'
 import styles from './DashboardPage.module.css'
 
+// API base and polling interval (in ms)
 const API_BASE = 'http://localhost:8080'
 const POLL_INTERVAL = 5000
 
@@ -11,6 +12,7 @@ export default function DashboardPage() {
   const [urls, setUrls] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
+  // Fetch the list of URLs from backend
   const fetchUrls = useCallback(async () => {
     setLoading(true)
     try {
@@ -19,6 +21,7 @@ export default function DashboardPage() {
       })
       const data = await res.json()
 
+      // Avoid unnecessary re-render if data hasn't changed
       setUrls((prev) => {
         const newDataStr = JSON.stringify(data.urls)
         const prevDataStr = JSON.stringify(prev)
@@ -31,6 +34,7 @@ export default function DashboardPage() {
     }
   }, [])
 
+  // Initial fetch + polling
   useEffect(() => {
     fetchUrls()
     const id = setInterval(fetchUrls, POLL_INTERVAL)

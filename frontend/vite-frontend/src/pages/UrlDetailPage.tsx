@@ -3,19 +3,23 @@ import { useEffect, useState } from 'react'
 import { PieChart, Pie, Cell, Legend } from 'recharts'
 import styles from './UrlDetailPage.module.css'
 
+// API base can be configured via Vite env var
 const API_BASE = 'http://localhost:8080'
 
 const COLORS = ['#0088FE', '#FF8042']
 
 export default function UrlDetailPage() {
 
+  // Type for broken link detail object
   type BrokenLink = {
     url: string
     status_code: number
   }
 
-
+  
   const { id } = useParams()
+
+  // State for result data
   const [data, setData] = useState<{
     status: string
     results: {
@@ -33,6 +37,7 @@ export default function UrlDetailPage() {
 
   const [loading, setLoading] = useState(true)
 
+  // Fetch detailed URL info on mount
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch(`${API_BASE}/api/urls/${id}/status`, {
@@ -46,6 +51,8 @@ export default function UrlDetailPage() {
   }, [id])
 
   if (loading) return <div>Loading...</div>
+
+  // If data not ready yet
   if (!data || data.status === 'queued' || data.status === 'running') {
     return <div>Still processing...</div>
   }
