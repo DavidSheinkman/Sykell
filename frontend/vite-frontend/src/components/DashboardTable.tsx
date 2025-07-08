@@ -1,4 +1,4 @@
-import  { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -68,9 +68,16 @@ export const DashboardTable = ({
     pageIndex: 0,
     pageSize: 5,
   })
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+
+  const filteredData = useMemo(() => {
+    if (statusFilter === 'all') return data
+    return data.filter(row => row.status === statusFilter)
+  }, [data, statusFilter])
+
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     state: {
       sorting,
@@ -85,6 +92,22 @@ export const DashboardTable = ({
 
   return (
     <div className={styles.tableContainer}>
+      <div className={styles.filterBar}>
+        <label>
+          Filter by Status:{' '}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="queued">Queued</option>
+            <option value="running">Running</option>
+            <option value="done">Done</option>
+            <option value="error">Error</option>
+          </select>
+        </label>
+      </div>
+
       <table className={styles.table}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (

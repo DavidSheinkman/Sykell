@@ -33,3 +33,7 @@ th, td {
   align-items: center;
   gap: 1rem;
 }
+
+.filterBar {
+  margin-bottom: 1rem;
+}
