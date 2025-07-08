@@ -9,6 +9,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 
+import { useNavigate } from 'react-router-dom'
 import styles from './DashboardTable.module.css'
 
 type URLData = {
@@ -38,9 +39,16 @@ export const DashboardTable = ({
       accessorKey: 'title',
       header: 'Title',
       cell: info => {
-        const title = info.getValue() as string
-        return title?.length > 60 ? title.slice(0, 60) + '…' : title
-      },
+        const row = info.row.original
+        return (
+          <span
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            onClick={() => navigate(`/url/${row.id}`)}
+          >
+            {info.getValue() as string}
+          </span>
+        )
+      }
     },
     {
       accessorKey: 'status',
@@ -72,6 +80,8 @@ export const DashboardTable = ({
     },
   ], [onStart, onDelete])
 
+  const navigate = useNavigate()
+
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -80,24 +90,24 @@ export const DashboardTable = ({
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [titleQuery, setTitleQuery] = useState('')
 
-const filteredData = useMemo(() => {
-  if (!data) return []  // guard if data is null or undefined
+  const filteredData = useMemo(() => {
+    if (!data) return []  // guard if data is null or undefined
 
-  const query = titleQuery.toLowerCase()
+    const query = titleQuery.toLowerCase()
 
-  return data.filter(row => {
-    const matchesStatus = statusFilter === 'all' || row.status === statusFilter
+    return data.filter(row => {
+      const matchesStatus = statusFilter === 'all' || row.status === statusFilter
 
-    const titleText = row.title ?? ''  // default empty string if null
-    const urlText = row.url ?? ''
+      const titleText = row.title ?? ''  // default empty string if null
+      const urlText = row.url ?? ''
 
-    const matchesText =
-      titleText.toLowerCase().includes(query) ||
-      urlText.toLowerCase().includes(query)
+      const matchesText =
+        titleText.toLowerCase().includes(query) ||
+        urlText.toLowerCase().includes(query)
 
-    return matchesStatus && matchesText
-  })
-}, [data, statusFilter, titleQuery])
+      return matchesStatus && matchesText
+    })
+  }, [data, statusFilter, titleQuery])
 
 
   const table = useReactTable({
