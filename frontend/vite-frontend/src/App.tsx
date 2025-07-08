@@ -1,34 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useCallback } from 'react'
+import { AddURLForm } from './components/AddURLForm'
+import styles from './App.module.css'
+import { DashboardTable } from './components/DashboardTable'
+
+const API_BASE = 'http://localhost:8080'
+const POLL_INTERVAL = 5000 // milliseconds
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [urls, setUrls] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // 1. fetchUrls wrapped in useCallback so interval always uses the same reference
+  const fetchUrls = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/urls`, {
+        headers: { Authorization: 'Bearer supersecrettoken' },
+      })
+      const data = await res.json()
+      setUrls(data.urls)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // 2. Initial load + polling setup
+  useEffect(() => {
+    fetchUrls()
+    const id = setInterval(fetchUrls, POLL_INTERVAL)
+    return () => clearInterval(id) // cleanup on unmount
+  }, [fetchUrls])
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Website Crawler Dashboard</h1>
+
+      <AddURLForm onSuccess={fetchUrls} />
+
+      {loading && <p>Loading…</p>}
+
+      <DashboardTable
+        data={urls}
+        onStart={async (id) => {
+          await fetch(`http://localhost:8080/api/urls/${id}/start`, {
+            method: 'POST',
+            headers: { Authorization: 'Bearer supersecrettoken' },
+          })
+          fetchUrls()
+        }}
+        onDelete={async (id) => {
+          await fetch(`http://localhost:8080/api/urls/${id}/delete`, {
+            method: 'DELETE',
+            headers: { Authorization: 'Bearer supersecrettoken' },
+          })
+          fetchUrls()
+        }}
+      />
+    </div>
   )
 }
 

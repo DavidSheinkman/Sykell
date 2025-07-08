@@ -1,0 +1,29 @@
+.container {
+  padding: 1rem;
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+.urlList {
+  list-style: none;
+  padding: 0;
+}
+
+.urlItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.status {
+  min-width: 4rem;
+  text-transform: capitalize;
+}
+
+.startButton {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
