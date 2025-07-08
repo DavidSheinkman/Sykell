@@ -11,20 +11,26 @@ function App() {
   const [loading, setLoading] = useState(false)
 
   // 1. fetchUrls wrapped in useCallback so interval always uses the same reference
-  const fetchUrls = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await fetch(`${API_BASE}/api/urls`, {
-        headers: { Authorization: 'Bearer supersecrettoken' },
-      })
-      const data = await res.json()
-      setUrls(data.urls)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+const fetchUrls = useCallback(async () => {
+  setLoading(true)
+  try {
+    const res = await fetch(`${API_BASE}/api/urls`, {
+      headers: { Authorization: 'Bearer supersecrettoken' },
+    })
+    const data = await res.json()
+
+    setUrls((prev) => {
+      const newDataStr = JSON.stringify(data.urls)
+      const prevDataStr = JSON.stringify(prev)
+      return newDataStr !== prevDataStr ? data.urls : prev
+    })
+  } catch (err) {
+    console.error(err)
+  } finally {
+    setLoading(false)
+  }
+}, [])
+
 
   // 2. Initial load + polling setup
   useEffect(() => {

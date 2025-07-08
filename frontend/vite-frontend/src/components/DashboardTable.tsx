@@ -78,11 +78,26 @@ export const DashboardTable = ({
     pageSize: 5,
   })
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [titleQuery, setTitleQuery] = useState('')
 
-  const filteredData = useMemo(() => {
-    if (statusFilter === 'all') return data
-    return data.filter(row => row.status === statusFilter)
-  }, [data, statusFilter])
+const filteredData = useMemo(() => {
+  if (!data) return []  // guard if data is null or undefined
+
+  const query = titleQuery.toLowerCase()
+
+  return data.filter(row => {
+    const matchesStatus = statusFilter === 'all' || row.status === statusFilter
+
+    const titleText = row.title ?? ''  // default empty string if null
+    const urlText = row.url ?? ''
+
+    const matchesText =
+      titleText.toLowerCase().includes(query) ||
+      urlText.toLowerCase().includes(query)
+
+    return matchesStatus && matchesText
+  })
+}, [data, statusFilter, titleQuery])
 
 
   const table = useReactTable({
@@ -116,7 +131,18 @@ export const DashboardTable = ({
           </select>
         </label>
       </div>
-      
+
+      <div className={styles.searchBar}>
+        <label>
+          Search Title:{' '}
+          <input
+            type="text"
+            value={titleQuery}
+            onChange={(e) => setTitleQuery(e.target.value)}
+            placeholder="Search by title or URL"
+          />
+        </label>
+      </div>
 
       <table className={styles.table}>
         <thead>

@@ -37,3 +37,12 @@ th, td {
 .filterBar {
   margin-bottom: 1rem;
 }
+
+.searchBar {
+  margin-bottom: 1rem;
+}
+.searchBar input {
+  padding: 4px 8px;
+  font-size: 14px;
+  margin-left: 6px;
+}
