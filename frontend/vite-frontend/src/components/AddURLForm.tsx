@@ -15,6 +15,9 @@ export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
     setLoading(true)
     setError(null)
 
+    
+    const trimmedUrl = url.trim()  // Trim leading/trailing spaces from input
+
     try {
       const res = await fetch(`${API_BASE}/api/urls`, {
         method: 'POST',
@@ -22,7 +25,7 @@ export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer supersecrettoken',
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: trimmedUrl }),
       })
 
       if (!res.ok) {
@@ -38,6 +41,7 @@ export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
       setLoading(false)
     }
   }
+
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
