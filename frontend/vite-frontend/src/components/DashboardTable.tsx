@@ -32,6 +32,25 @@ export const DashboardTable = ({
 }) => {
   const columns = useMemo<ColumnDef<URLData>[]>(() => [
     {
+      id: 'select',
+      header: '',
+      cell: ({ row }) => {
+        const id = row.original.id
+        return (
+          <input
+            type="checkbox"
+            checked={selectedIds.includes(id)}
+            onChange={(e) => {
+              setSelectedIds(prev =>
+                e.target.checked ? [...prev, id] : prev.filter(i => i !== id)
+              )
+            }}
+          />
+        )
+      },
+    },
+
+    {
       accessorKey: 'url',
       header: 'URL',
     },
@@ -81,6 +100,8 @@ export const DashboardTable = ({
   ], [onStart, onDelete])
 
   const navigate = useNavigate()
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
@@ -126,6 +147,8 @@ export const DashboardTable = ({
 
   return (
     <div className={styles.tableContainer}>
+
+
       <div className={styles.filterBar}>
         <label>
           Filter by Status:{' '}
@@ -153,6 +176,27 @@ export const DashboardTable = ({
           />
         </label>
       </div>
+
+      {selectedIds.length > 0 && (
+        <div className={styles.bulkActions}>
+          <button
+            onClick={async () => {
+              for (const id of selectedIds) await onStart(id)
+              setSelectedIds([])
+            }}
+          >
+            Re-Analyze Selected
+          </button>
+          <button
+            onClick={async () => {
+              for (const id of selectedIds) await onDelete(id)
+              setSelectedIds([])
+            }}
+          >
+            Delete Selected
+          </button>
+        </div>
+      )}
 
       <table className={styles.table}>
         <thead>

@@ -46,3 +46,16 @@ th, td {
   font-size: 14px;
   margin-left: 6px;
 }
+
+.bulkActions {
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.bulkActions {
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+}
