@@ -17,13 +17,26 @@ type URL struct {
 	Status    string  `json:"status"`
 	CreatedAt string  `json:"created_at"`
 	LastRunAt *string `json:"last_run_at"` // nullable
+	Title     *string `json:"title"`
 }
 
 // GET /api/urls
 func GetURLs(c *gin.Context) {
 	db := c.MustGet("db").(*sql.DB)
 
-	rows, err := db.Query("SELECT id, url, status, created_at, last_run_at FROM urls ORDER BY created_at DESC")
+	rows, err := db.Query(`
+		SELECT u.id, u.url, u.status, u.created_at, u.last_run_at, cr.title
+		FROM urls u
+		LEFT JOIN (
+			SELECT url_id, title
+			FROM crawl_results
+			WHERE created_at = (
+			SELECT MAX(created_at) FROM crawl_results cr2 WHERE cr2.url_id = crawl_results.url_id
+			)
+		) cr ON u.id = cr.url_id
+		ORDER BY u.created_at DESC
+	`)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "DB query failed"})
 		return
@@ -33,7 +46,7 @@ func GetURLs(c *gin.Context) {
 	var urls []URL
 	for rows.Next() {
 		var u URL
-		if err := rows.Scan(&u.ID, &u.URL, &u.Status, &u.CreatedAt, &u.LastRunAt); err == nil {
+		if err := rows.Scan(&u.ID, &u.URL, &u.Status, &u.CreatedAt, &u.LastRunAt, &u.Title); err == nil {
 			urls = append(urls, u)
 		}
 	}

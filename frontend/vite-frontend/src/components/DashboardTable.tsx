@@ -17,6 +17,7 @@ type URLData = {
   status: string
   created_at: string
   last_run_at: string | null
+  title?: string
 }
 
 export const DashboardTable = ({
@@ -32,6 +33,14 @@ export const DashboardTable = ({
     {
       accessorKey: 'url',
       header: 'URL',
+    },
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      cell: info => {
+        const title = info.getValue() as string
+        return title?.length > 60 ? title.slice(0, 60) + '…' : title
+      },
     },
     {
       accessorKey: 'status',
@@ -107,6 +116,7 @@ export const DashboardTable = ({
           </select>
         </label>
       </div>
+      
 
       <table className={styles.table}>
         <thead>
