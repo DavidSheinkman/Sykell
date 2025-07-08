@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useDebounce } from 'use-debounce'
+import { UIButton } from '../components/UIButton'
 
 import {
   useReactTable,
@@ -120,9 +121,15 @@ export const DashboardTable = ({
         return (
           <div className={styles.actions}>
             {status === 'queued' && (
-              <button onClick={() => onStart(id)}>Start</button>
+
+              <UIButton onClick={() => onStart(id)}>
+                Start
+              </UIButton>
             )}
-            <button onClick={() => onDelete(id)}>Delete</button>
+
+            <UIButton onClick={() => onDelete(id)}>
+              Delete
+            </UIButton>
           </div>
         )
       },
@@ -227,22 +234,20 @@ export const DashboardTable = ({
 
       {selectedIds.length > 0 && (
         <div className={styles.bulkActions}>
-          <button
-            onClick={async () => {
-              for (const id of selectedIds) await onStart(id)
-              setSelectedIds([])
-            }}
-          >
+
+          <UIButton onClick={async () => {
+            for (const id of selectedIds) await onStart(id)
+            setSelectedIds([])
+          }}>
             Re-Analyze Selected
-          </button>
-          <button
-            onClick={async () => {
-              for (const id of selectedIds) await onDelete(id)
-              setSelectedIds([])
-            }}
-          >
+          </UIButton>
+
+          <UIButton onClick={async () => {
+            for (const id of selectedIds) await onDelete(id)
+            setSelectedIds([])
+          }}>
             Delete Selected
-          </button>
+          </UIButton>
         </div>
       )}
 
@@ -290,22 +295,19 @@ export const DashboardTable = ({
       </table>
 
       <div className={styles.pagination}>
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
+
+        <UIButton onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}>
           ⬅ Prev
-        </button>
+        </UIButton>
         <span>
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </span>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
+        <UIButton onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}>
           Next ➡
-        </button>
+        </UIButton>
       </div>
     </div>
   )

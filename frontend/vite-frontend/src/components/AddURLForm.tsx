@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styles from './AddURLForm.module.css'
+import { UIButton } from '../components/UIButton'
 
 const API_BASE = 'http://localhost:8080'
 
@@ -15,7 +16,7 @@ export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
     setLoading(true)
     setError(null)
 
-    
+
     const trimmedUrl = url.trim()  // Trim leading/trailing spaces from input
 
     try {
@@ -53,9 +54,9 @@ export const AddURLForm = ({ onSuccess }: { onSuccess: () => void }) => {
         required
         className={styles.input}
       />
-      <button type="submit" className={styles.button} disabled={loading}>
+      <UIButton type="submit" disabled={loading}>
         {loading ? 'Adding...' : 'Add URL'}
-      </button>
+      </UIButton>
       {error && <p className={styles.error}>{error}</p>}
     </form>
   )
