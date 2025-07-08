@@ -4,21 +4,28 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gocolly/colly/v2"
 )
 
+type BrokenLink struct {
+	URL        string
+	StatusCode int
+}
+
 // CrawlResult holds the result of analysis
 type CrawlResult struct {
-	HTMLVersion   string
-	Title         string
-	H1Count       int
-	H2Count       int
-	InternalLinks int
-	ExternalLinks int
-	BrokenLinks   int
-	HasLoginForm  bool
+	HTMLVersion     string
+	Title           string
+	H1Count         int
+	H2Count         int
+	InternalLinks   int
+	ExternalLinks   int
+	BrokenLinks     int
+	HasLoginForm    bool
+	BrokenLinksList []BrokenLink
 }
 
 // CrawlURL fetches the page and analyzes it
@@ -30,12 +37,13 @@ func CrawlURL(target string) (*CrawlResult, error) {
 
 	result := &CrawlResult{}
 
-	// To detect broken links
-	brokenCount := 0
+	var brokenLinks []BrokenLink
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
 	internal := 0
 	external := 0
 
-	// Collector setup
 	c := colly.NewCollector(
 		colly.AllowedDomains(u.Host),
 		colly.MaxDepth(1),
@@ -67,27 +75,34 @@ func CrawlURL(target string) (*CrawlResult, error) {
 			return
 		}
 
-		if err != nil {
-			return
-		}
-
 		if strings.Contains(link, u.Host) {
 			internal++
 		} else {
 			external++
 		}
 
-		// Check if link is broken
+		wg.Add(1)
 		go func(link string) {
+			defer wg.Done()
 			client := &http.Client{Timeout: 3 * time.Second}
 			resp, err := client.Head(link)
-			if err != nil || resp.StatusCode >= 400 {
-				brokenCount++
+			status := -1
+			if err == nil {
+				status = resp.StatusCode
+			}
+
+			if status >= 400 && status <= 599 {
+				mu.Lock()
+				brokenLinks = append(brokenLinks, BrokenLink{
+					URL:        link,
+					StatusCode: status,
+				})
+				mu.Unlock()
 			}
 		}(link)
 	})
 
-	// Detect HTML version via doctype (manually fetch it)
+	// Detect HTML version via doctype (manual fetch)
 	resp, err := http.Get(target)
 	if err == nil && resp.Body != nil {
 		defer resp.Body.Close()
@@ -103,18 +118,17 @@ func CrawlURL(target string) (*CrawlResult, error) {
 		}
 	}
 
-	// Start scraping
 	err = c.Visit(target)
 	if err != nil {
 		return nil, err
 	}
 
-	// Give time for go routines to finish
-	time.Sleep(1 * time.Second)
+	wg.Wait()
 
 	result.InternalLinks = internal
 	result.ExternalLinks = external
-	result.BrokenLinks = brokenCount
+	result.BrokenLinks = len(brokenLinks)
+	result.BrokenLinksList = brokenLinks
 
 	return result, nil
 }

@@ -8,8 +8,29 @@ const API_BASE = 'http://localhost:8080'
 const COLORS = ['#0088FE', '#FF8042']
 
 export default function UrlDetailPage() {
+
+  type BrokenLink = {
+    url: string
+    status_code: number
+  }
+
+
   const { id } = useParams()
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<{
+    status: string
+    results: {
+      html_version: string
+      title: string
+      h1_count: number
+      h2_count: number
+      internal_links: number
+      external_links: number
+      broken_links: number
+      has_login_form: boolean
+      broken_details: BrokenLink[] | null
+    }
+  } | null>(null)
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -59,6 +80,14 @@ export default function UrlDetailPage() {
         </Pie>
         <Legend />
       </PieChart>
+      <h3>Broken Links</h3>
+      {(data?.results?.broken_details || []).map((link: BrokenLink, i) => (
+        <li key={i}>
+          <a href={link.url} target="_blank" rel="noreferrer">{link.url}</a> — {link.status_code}
+        </li>
+      ))}
+
+
     </div>
   )
 }

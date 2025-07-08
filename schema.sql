@@ -20,3 +20,11 @@ CREATE TABLE IF NOT EXISTS crawl_results (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (url_id) REFERENCES urls(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS broken_link_details (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  crawl_result_id INT NOT NULL,
+  url TEXT NOT NULL,
+  status_code INT NOT NULL,
+  FOREIGN KEY (crawl_result_id) REFERENCES crawl_results(id) ON DELETE CASCADE
+);
