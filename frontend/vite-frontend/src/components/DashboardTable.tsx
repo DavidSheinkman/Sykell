@@ -75,14 +75,41 @@ export const DashboardTable = ({
     {
       accessorKey: 'status',
       header: 'Status',
+      cell: info => {
+        const status = info.getValue() as string
+
+        if (status === 'running') {
+          return (
+            <span>
+              <span className={styles.loader}></span>
+              Running
+            </span>
+          )
+        }
+
+        return (
+          <span
+            className={
+              status === 'done' ? styles.statusDone :
+                status === 'error' ? styles.statusError :
+                  ''
+            }
+          >
+            {status}
+          </span>
+        )
+      }
     },
+
     {
       accessorKey: 'created_at',
       header: 'Created',
+      cell: info => formatDateTime(info.getValue() as string)
     },
     {
       accessorKey: 'last_run_at',
       header: 'Last Run',
+      cell: info => formatDateTime(info.getValue() as string | null)
     },
     {
       id: 'actions',
@@ -134,6 +161,22 @@ export const DashboardTable = ({
       return matchesStatus && matchesText
     })
   }, [data, statusFilter, titleQuery])
+
+  function formatDateTime(iso: string | null) {
+    if (!iso) return '—'
+
+    const date = new Date(iso)
+    const datePart = date.toISOString().slice(0, 10)
+    const timePart = date.toISOString().slice(11, 19)
+
+    return (
+      <>
+        <div>{datePart}</div>
+        <div style={{ fontSize: '0.85em', color: '#666' }}>{timePart}</div>
+      </>
+    )
+  }
+
 
 
   const table = useReactTable({

@@ -60,6 +60,39 @@ th, td {
   gap: 1rem;
 }
 
+.statusDone {
+  color: green;
+  font-weight: bold;
+}
+
+.statusError {
+  color: red;
+  font-weight: bold;
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #FFF;
+  border-bottom-color: #FF3D00;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
 @media (max-width: 768px) {
   .table {
     font-size: 0.85rem;
