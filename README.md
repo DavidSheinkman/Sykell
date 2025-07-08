@@ -47,6 +47,14 @@ npm i
 npm run dev
 ```
 
+## Running Tests
+
+From frontend directory:
+
+```bash
+npm test
+```
+
 ## API Endpoints
 
 | Method | Endpoint               | Description                |
